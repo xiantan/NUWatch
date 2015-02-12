@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+
+		<!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame
+		Remove this if you use the .htaccess -->
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+		<title>open</title>
+		<meta name="description" content="open all tabs from server's save">
+		<meta name="author" content="tan">
+
+		<script src="jquery.js"></script>
+		<script>
+			(function($) {
+				$.QueryString = (function(a) {
+					if (a == "")
+						return {};
+					var b = {};
+					for (var i = 0; i < a.length; ++i) {
+						var p = a[i].split('=');
+						if (p.length != 2)
+							continue;
+						b[p[0]] = decodeURIComponent(p[1].replace(/\+/g, " "));
+					}
+					return b;
+				})(window.location.search.substr(1).split('&'));
+			})(jQuery);
+		</script>
+	</head>
+
+	<body>
+		<div id="urlLists">
+			<!--ajax to put here-->
+		</div>
+		<script>
+			$.ajax({
+				type : 'GET',
+				url : "140.123.101.185:3009/tabs/get/",
+				data : {uid:$.QueryString["uid"]},
+				contentType : "text/plain",
+				success : function(data) {
+					console.log("success:[" + data + "]");
+				},
+				error : function(data) {
+					console.log("fail" + data);
+				}
+			});
+		</script>
+	</body>
+</html>

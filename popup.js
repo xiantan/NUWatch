@@ -1,0 +1,229 @@
+var background = chrome.extension.getBackgroundPage();
+var host = background.host;
+var userIdentify = background.userIdentify;
+document.addEventListener('DOMContentLoaded', function() {
+
+	$("#upload").click(function() {
+		//console.log("upload clicked");
+		
+		chrome.history.search({//TODO move to onInstalled
+			text : '',
+			maxResults : 1e9
+		}, function(data) {
+			var tmp = [];
+			for (var i in data) {
+				tmp[i] = {};
+				tmp[i].url = data[i].url;
+				tmp[i].visitCount = data[i].visitCount;
+			}
+			console.log(JSON.stringify(tmp));
+			/*TODO http request post : JSON.stringify(sendObj)
+			 * sendObj = {};
+			 * sendObj.urls=tmp;
+			 * sendObj.type="history"
+			 * sendObj.version=1;
+			 * sendObj.uid=identifyId;
+			 */
+
+		});
+		return;
+		userIdentify = $("#uid").val();
+		console.log(userIdentify);
+
+		chrome.tabs.query({}, function(tabs) {
+			var saveInfo = {};
+			var tabary = [];
+			var functionCalls = [];
+			console.log("query in query.tabs.callback");
+			//sendGetScrollPosition(tabs,tabary);
+			
+			 // for (var i in tabs) {
+// 
+				// functionCalls = chrome.tabs.sendMessage(tabs[i].id, {
+					// action : "getScrollPosition"
+				// }, function(response) {
+					// console.log(response);
+					// if(!response)return;
+					// var obj = {};
+					// try{
+						// obj = {title : response.title,
+						// url : response.url,
+						// scrollLocation : response.scrollLocation
+					// };
+					// }catch(e){
+						// console.log("fail");
+					// }
+					// tabary.push(obj);
+				// });
+// 
+			// }
+			// console.log(tabary.len);
+			myary = sendGetScrollPosition(tabs,tabary);
+			console.log("myary.len" + myary.length);
+			$.when.apply(null, myary).then(function() {
+			// $(document).ajaxStop(function () {
+			//setTimeout(function() {
+				console.log(tabary);
+				console.log('len:'+tabary.length);
+				saveInfo.urls = tabary;
+				saveInfo.userIdentify = userIdentify;
+				saveInfo.timestamp = (new Date()).getTime();
+				console.log("all tabs ary OK");
+
+				//chrome.storage.loca;
+				$.ajax({
+					type : 'POST',
+					url : host + "/tabs/save/",
+					data : JSON.stringify(saveInfo),
+					// data : "122gg",
+					contentType : "text/plain",
+					// contentType: "application/json",
+					//dateType:'text',
+					success : function(data) {
+						console.log("success:[" + data + "]");
+					},
+					error : function(data) {
+						console.log("fail" + JSON.parse(JSON.stringify(tabary)));
+					}
+				});
+				console.log("window will close");
+				// window.close();
+
+			},1000);
+		});
+
+	});
+	$("#openUrls").click(function() {
+		$.ajax({
+			type: 'GET',
+			url: "http://140.123.101.185:3009/tabs/get/?uid="+$("#uid").val(),
+			//dataType: 'jsonp',
+			success: function(json) {
+				chrome.runtime.sendMessage({
+					openUrls : json
+				});
+
+			
+    		}
+		});
+	});
+	$("#getsource").click(function() {
+		chrome.runtime.sendMessage({
+					action : "getSource"
+				});
+
+	});
+	$("#search").click(function() {
+		// chrome.runtime.sendMessage({
+					// action : "search",
+					// search : $("#uid").val()
+				// });
+		var contentSave={};
+		chrome.storage.local.get(null, function(items) {
+			contentSave = items.content;
+			//console.log(items);return;
+			var results = {};
+			pattern = $("#uid").val();
+			var locate = -1;
+			
+			//var results = [];
+			//for (var i = 0; i < contentSave.length; i++) {
+			for (var i in items) {
+				locate = items[i].content.indexOf(pattern);
+				if (locate != -1 && !results.hasOwnProperty(items[i].url)) {
+					var url = items[i].url;
+					var content = items[i].content;
+					var title = items[i].title;
+					// results.push({ url:url });
+					var obj={};
+					obj = {url:url,title:title,subcontent:content.substring(locate-15,locate+30)};
+					
+					results[url] = obj;
+					console.log(locate + "$$$$" + results.hasOwnProperty(items[i].url) + "&&&" + items[i].url);
+				} else {
+					console.log(locate + "$$$$" + results.hasOwnProperty(items[i].url) + "&&&" + items[i].url);
+				}
+			}
+			// for(var i =0;i<results.length;i++){
+			// console.log(results[i].url);
+			// }
+
+			console.log("result" + JSON.stringify(results));
+				
+			htmStr = "";
+			$("#tabList").html(""); 
+			for (var i in results) {
+				if (results[i].title && results[i].title != "") {
+
+					var tabList = document.getElementById("tabList");
+					var list = document.createElement('div');
+					list.setAttribute("class","list");
+					var href = document.createElement("a");
+					href.setAttribute("href",results[i].url);
+					href.setAttribute("class","title");
+					href.innerHTML=results[i].title;
+					list.appendChild(href);
+					list.appendChild(document.createElement("br"));
+					var subcontent = document.createElement('div');
+					subcontent.setAttribute("class","subcontent");
+					subcontent.appendChild(document.createTextNode(results[i].subcontent) );
+					list.appendChild(subcontent);
+					tabList.appendChild(list);
+
+					//htmStr += '<div class="list"><a href="' + results[i].url + '">' + results[i].title + '</a><br/>';
+					//htmStr += '<div class="subcontent">' + results[i].subcontent + '</div></div>';
+
+				}
+			}
+			//$("#tabList").html(htmStr); 
+			console.log($("tabList"));
+
+		}); 
+
+
+	});
+	chrome.runtime.sendMessage({
+		msg : "popup.js running"
+	});
+
+});
+
+function sendGetScrollPosition(tabs, tabary) {
+	deferreds = [];
+	for (var i =0;i< (tabs.length);i++) {
+		var deferred = $.Deferred();
+		deferreds.push(deferred.promise());
+		(function(i,deferred){
+		chrome.tabs.sendMessage(tabs[i].id, {
+			action : "getScrollPosition"
+		},((function(response) {
+			//console.log(response);
+			if (!response){
+				console.log("fail in response " + i);
+				deferred.resolve();
+				return ;
+			}
+			var obj = {};
+			try {
+				obj = {
+					title : response.title,
+					url : response.url,
+					scrollLocation : response.scrollLocation
+				};
+							} catch(e) {
+				console.log("fail " + i);
+				deferred.resolve();
+				return ;
+			}
+			
+			tabary.push(obj);
+			console.log("success in sendGetScrollPosition " + i);
+			deferred.resolve();
+			return ;
+		})));
+		})(i,deferred);
+		//console.log(functionCalls);
+
+	}
+	return  deferreds;
+}
