@@ -10,7 +10,7 @@ chrome.browserAction.setPopup({
         popup: "popup.html"
     });
 /*debug*/
- webs = new Wsclient(ws_host, "notify");
+ webs = new Wsclient(ws_host, "notify" );//, {intervalTime:5000});
 chrome.runtime.onInstalled.addListener(function(details) {
 //chrome.runtime.onStartup.addListener(function(details) {
 	/*chrome.tabs.query({}, function(tabs) {
@@ -42,7 +42,7 @@ chrome.runtime.onInstalled.addListener(function(details) {
 chrome.runtime.onStartup.addListener(function() {
 }); 
 
- 
+
  /*debug*/
 chrome.extension.onMessage.addListener(function(request, sender) {
 	if (request.action == "getSource") {
@@ -77,67 +77,8 @@ chrome.extension.onMessage.addListener(function(request, sender) {
 			contentSave = {url:url,content:content};
 			chrome.storage.local.set(obj2,function(){
 			});
-		// chrome.storage.local.get('content',function(items){
-			// var contentSave={};
-			// if(!items.content){
-				// console.log("no content in storage.local");
-				// console.log(items);				
-			// }
-			// else{
-				// contentSave = items.content;
-			// }
-			// if(!contentSave.hasOwnProperty(obj.url)){
-						// contentSave[obj.url]=obj;
-						// console.log(contentSave);
-			// }
-			// else{
-				// return true;
-			// }
-			// //items.content[obj.url]=obj;
-		// chrome.storage.local.set({content:contentSave},function(){
-// 			
-			// if(chrome.runtime.lastError){
-				// console.log("error @ bg.js.onMessage.action:isSource ::"+chrome.runtime.lastError.message);
-			// }
-			// else{
-				// console.log("chrome.storage.local.set{'content') success for url:"+obj.url);
-			// }
-		// });
-		// });
+
 		})(obj);
-	}
-	else if(request.action == "search"){//won't work anymore 
-	
-		// chrome.storage.local.get(null, function(items) {
-			// contentSave = items.content;
-			// //console.log(items);return;
-			// var results = {};
-			// pattern = request.search;
-			// var locate = -1;
-// 			
-			// //var results = [];
-			// //for (var i = 0; i < contentSave.length; i++) {
-			// for (var i in items) {
-				// locate = items[i].content.indexOf(pattern);
-				// if (locate != -1 && !results.hasOwnProperty(items[i].url)) {
-					// var url = items[i].url;
-					// var content = items[i].content;
-					// // results.push({ url:url });
-					// results[url] = url;
-					// console.log(locate + "$$$$" + results.hasOwnProperty(items[i].url) + "&&&" + items[i].url);
-				// } else {
-					// console.log(locate + "$$$$" + results.hasOwnProperty(items[i].url) + "&&&" + items[i].url);
-				// }
-			// }
-			// // for(var i =0;i<results.length;i++){
-			// // console.log(results[i].url);
-			// // }
-// 
-			// console.log("result" + JSON.stringify(results));
-		// }); 
-
-
-		
 	}
 	else if(request.msg){
 		console.log("msg: "+request.msg);
@@ -219,42 +160,47 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 	// console.log("tabs.onCreated: " + tab.url);
 // });
 
-function Wsclient(wsURL, wsProtocol, callback) {
-	var websocket = null;
-	var isClose = true;
-	var ws = new WebSocket(wsURL, wsProtocol);
-	this.ws = ws;
-	ws.onmessage = function(e) {
-		console.log(e.data);
-		try {
-			receiveJson = JSON.parse(e.data);
-		} catch(e) {
-			console.log("JSON parse error at Wsclient.onmessage()");
-			return false;
-		}
-		var opt = {
-			type : "basic",
-			title : receiveJson.title,
-			message : receiveJson.message,
-			iconUrl : "icon.png"
+function Wsclient(wsURL, wsProtocol, option, callback) {
+	if(!option) option={};
+	var ws = undefined;
+	var intervalTime = option.intervalTime || 10000;
+	var connect = function() {
+		ws = new WebSocket(wsURL, wsProtocol);
+		this.ws = ws;
+		ws.onmessage = function(e) {
+			console.log(e.data);
+			try {
+				receiveJson = JSON.parse(e.data);
+			} catch(e) {
+				console.log("JSON parse error at Wsclient.onmessage()");
+				return false;
+			}
+			var opt = {
+				type : "basic",
+				title : receiveJson.title,
+				message : receiveJson.message,
+				iconUrl : "icon.png"
 
+			};
+			chrome.browserAction.setBadgeText({
+				text : "" + receiveJson.notificationNum
+			});
+
+			getmesage(opt);
 		};
-		chrome.browserAction.setBadgeText({
-			text : "" + receiveJson.notificationNum
-		});
+		ws.onclose = function(e) {
+			console.log("ws close");
+			setTimeout(connect,intervalTime);						
+		};
+		ws.onopen = function(e) {
+			console.log("ws open");
+		};
+		ws.onerror = function(e) {
+			console.log("something wrong in ws");
+		};
+	}; 
+	connect();
 
-		getmesage(opt);
-	};
-	ws.onclose = function(e) {//TODO reconnect
-		isClose = true;
-		console.log("ws close");
-	};
-	ws.onopen = function(e) {
-		console.log("ws open");
-	};
-	ws.onerror = function(e) {
-		console.log("something wrong in ws");
-	};
 	//TODO auth
 	/*
 	 $.get(WWW_HOST+"/ws/users/me", function(data) {
