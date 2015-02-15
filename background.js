@@ -163,10 +163,12 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 function Wsclient(wsURL, wsProtocol, option, callback) {
 	if(!option) option={};
 	var ws = undefined;
+	
 	var intervalTime = option.intervalTime || 10000;
 	var connect = function() {
 		ws = new WebSocket(wsURL, wsProtocol);
-		this.ws = ws;
+		
+		
 		ws.onmessage = function(e) {
 			console.log(e.data);
 			try {
@@ -190,9 +192,13 @@ function Wsclient(wsURL, wsProtocol, option, callback) {
 		};
 		ws.onclose = function(e) {
 			console.log("ws close");
+			ws = null;
 			setTimeout(connect,intervalTime);						
 		};
-		ws.onopen = function(e) {
+		ws.onopen = function(e) {//TODO auth!
+			/* just testing ,use mine uid*/
+			ws.send(JSON.stringify({type:"verify",uid:5567}));
+			/* testing end */
 			console.log("ws open");
 		};
 		ws.onerror = function(e) {
@@ -201,7 +207,7 @@ function Wsclient(wsURL, wsProtocol, option, callback) {
 	}; 
 	connect();
 
-	//TODO auth
+	//TODO auth method
 	/*
 	 $.get(WWW_HOST+"/ws/users/me", function(data) {
 	 //console.log('DATA',data);
@@ -213,4 +219,8 @@ function Wsclient(wsURL, wsProtocol, option, callback) {
 	 turn login page by chrome.tabs.create();
 	 }
 	 });*/
+	
+	
+	
+	return {ws:ws};
 }
