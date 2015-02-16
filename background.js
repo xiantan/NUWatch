@@ -35,7 +35,7 @@ chrome.runtime.onInstalled.addListener(function(details) {
     }*/
     //chrome.storage.local.remove('content',function(){console.log("remove content @ extension inital");});
     chrome.storage.local.clear(function(){console.log("clear all @ extension inital");});
-	console.log("should be all reload");
+	//console.log("should be all reload");
 
 }); 
 
@@ -163,7 +163,7 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 function Wsclient(wsURL, wsProtocol, option, callback) {
 	if(!option) option={};
 	var ws = undefined;
-	
+	console.log("create ws");
 	var intervalTime = option.intervalTime || 10000;
 	var connect = function() {
 		ws = new WebSocket(wsURL, wsProtocol);
