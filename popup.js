@@ -1,9 +1,11 @@
-var background = chrome.extension.getBackgroundPage();
-var host = background.host;
-var userIdentify = background.userIdentify;
+//var background = chrome.extension.getBackgroundPage();
+
+var host = "140.123.101.185:3009";
+//var userIdentify = background.userIdentify;
 document.addEventListener('DOMContentLoaded', function() {
 
-	$("#upload").click(function() {
+	$("#history").click(function() {
+		var str="";
 		//console.log("upload clicked");
 		
 		chrome.history.search({//TODO move to onInstalled
@@ -17,6 +19,7 @@ document.addEventListener('DOMContentLoaded', function() {
 				tmp[i].visitCount = data[i].visitCount;
 			}
 			console.log(JSON.stringify(tmp));
+			$("#tabList").html(JSON.stringify(tmp));
 			/*TODO http request post : JSON.stringify(sendObj)
 			 * sendObj = {};
 			 * sendObj.urls=tmp;
@@ -26,7 +29,11 @@ document.addEventListener('DOMContentLoaded', function() {
 			 */
 
 		});
+
+		
+		
 		return;
+		
 		userIdentify = $("#uid").val();
 		console.log(userIdentify);
 
@@ -93,7 +100,29 @@ document.addEventListener('DOMContentLoaded', function() {
 		});
 
 	});
-	$("#openUrls").click(function() {
+	$("#bookmarks").click(function() {
+		var str="";
+
+		function traversalBookmark(bookmarks) {//TODO use $.ajax to replace! && must move to chrome.runtime.onInstalled
+			//bookmarks.forEach(function(bookmark) {
+				for(var i in bookmarks){					
+					if (bookmarks[i].children){
+						//console.log(">>>"+bookmarks[i].title);
+						str += ">>>"+bookmarks[i].title + "<br/>\n";
+						traversalBookmark(bookmarks[i].children);
+					}
+					else{
+						//console.log( bookmarks[i].title + "[" +bookmarks[i].url + "]");
+						str += bookmarks[i].title + "[" +bookmarks[i].url + "]<br/>\n";
+					}
+					
+				}
+		}
+		chrome.bookmarks.getTree(function(bookmarks) {
+			traversalBookmark(bookmarks);
+			$("#tabList").html(str);
+		});
+		return;
 		$.ajax({
 			type: 'GET',
 			url: "http://140.123.101.185:3009/tabs/get/?uid="+$("#uid").val(),
