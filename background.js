@@ -4,13 +4,13 @@
 var host = "140.123.101.185:3009";
 var web_host="http://"+host;
 var ws_host="ws://"+host;
-var userIdentify = 'tan_test';
+var id_host = 'http://140.123.101.185:9527';
 
 chrome.browserAction.setPopup({
         popup: "popup.html"
     });
 /*debug*/
- webs = new Wsclient(ws_host, "notify" );//, {intervalTime:5000});
+ webs = new Wsclient(ws_host, "notify" , {intervalTime:3000});
 chrome.runtime.onInstalled.addListener(function(details) {
 //chrome.runtime.onStartup.addListener(function(details) {
 	/*chrome.tabs.query({}, function(tabs) {
@@ -202,8 +202,22 @@ function Wsclient(wsURL, wsProtocol, option, callback) {
 			setTimeout(connect,intervalTime);						
 		};
 		ws.onopen = function(e) {//TODO auth!
+			/* testing by not really uid*/
+		
+			$.get(id_host + "/id/get/", function(data) {
+				//console.log('DATA',data);
+				//chrome.tabs.sendMessage(targetTab.id, {type: 'id', data: data});
+				if (data != null) {
+					//ws.send(JSON.stringify(auth_data));
+					ws.send(JSON.stringify({type:"verify",uid:data}));
+					//console.log(data);
+				} else {
+					//turn login page by chrome.tabs.create();
+				}
+			}); 
+
 			/* just testing ,use mine uid*/
-			ws.send(JSON.stringify({type:"verify",uid:5567}));
+			//ws.send(JSON.stringify({type:"verify",uid:5567}));
 			/* testing end */
 			console.log("ws open");
 		};
