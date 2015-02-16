@@ -177,18 +177,24 @@ function Wsclient(wsURL, wsProtocol, option, callback) {
 				console.log("JSON parse error at Wsclient.onmessage()");
 				return false;
 			}
-			var opt = {
-				type : "basic",
-				title : receiveJson.title,
-				message : receiveJson.message,
-				iconUrl : "icon.png"
 
-			};
+			if (receiveJson.title) {
+				var message = receiveJson.message || "";
+				var opt = {
+					type : "basic",
+					title : receiveJson.title,
+					message : message,
+					iconUrl : "icon.png" //TODO change good icon
+
+				};
+				getmesage(opt);
+			}
+
 			chrome.browserAction.setBadgeText({
 				text : "" + receiveJson.notificationNum
 			});
 
-			getmesage(opt);
+			
 		};
 		ws.onclose = function(e) {
 			console.log("ws close");
