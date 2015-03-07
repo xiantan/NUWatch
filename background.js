@@ -67,16 +67,41 @@ chrome.extension.onMessage.addListener(function(request, sender) {
 		console.log(request.url);
 		//console.log(request.source);
 		var obj={url:request.url,content:request.source,title:request.title};
-		obj[request.url]=request.url;
+		//obj[request.url]=request.url;
 		(function(obj){
-			var url = obj.url;
-			var content = obj.content;
-			var title = obj.title;
-			var obj2 ={};
-			obj2[url] = {url:url,content:content,title:title};
-			contentSave = {url:url,content:content};
-			chrome.storage.local.set(obj2,function(){
+			var saveFunc = function(webDataObj){
+				return function(data){
+					if(data){//TODO check data
+						/* check data*/
+					}
+					var obj2 ={};
+					webDataObj.keyword = data || "";
+					/* just test line*/ webDataObj.content='';
+					obj2[webDataObj.url] = webDataObj;
+					/* just test line*/ webDataObj;
+					chrome.storage.local.set(obj2,function(){
+					});
+				};
+			};
+			
+			//contentSave = {url:url,content:content};
+			$.ajax({
+					type : 'GET',
+					//url : host + "/tabs/save/",
+					url : 'http://www.cs.ccu.edu.tw/~cht99u/key',
+					//data : JSON.stringify(saveInfo),
+					// data : "122gg",
+					contentType : "text/plain",
+					// contentType: "application/json",
+					//dateType:'text',
+					success : saveFunc(obj),
+					error : function(data) {
+						console.log("fail" + JSON.parse(JSON.stringify(tabary)));
+					}
 			});
+			
+			
+			
 
 		})(obj);
 	}
@@ -150,7 +175,22 @@ function replyBtnClick(notificationId) {
 
 };
 
+// chrome.tabs.onCreated.addListener(function(tab){
+	// //test
+	// chrome.storage.local.get(null, function(items) {
+			// if(!items.yo){
+				// items.yo=[];
+			// }
+			// items.yo.push('a');
+			// chrome.storage.local.set(items,function(){});
+			// console.log('a'+JSON.stringify(items));
+		// });
+// 	
+	// //test
+// });
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+	
+
 	if (changeInfo.status == 'complete') {//TODO sent restful request to server
 		console.log("tabs.onUpdated:[" + tab.url + "] id: " + tabId + "  status: " + changeInfo.status);
 	}
