@@ -10,12 +10,14 @@ document.addEventListener('DOMContentLoaded', function() {
 		
 		chrome.history.search({//TODO move to onInstalled
 			text : '',
+			startTime : 0,
 			maxResults : 1e9
 		}, function(data) {
 			var tmp = [];
 			for (var i in data) {
 				tmp[i] = {};
 				tmp[i].url = data[i].url;
+				tmp[i].title = data[i].title;
 				tmp[i].visitCount = data[i].visitCount;
 			}
 			console.log(JSON.stringify(tmp));
