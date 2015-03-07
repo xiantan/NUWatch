@@ -53,7 +53,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 		});
 		return true;
 	}
-	else if(request.action=="getSource"){
+	else if(request.action=="getSource"){//TODO should put to page onload
 
 		chrome.extension.sendMessage({
 			action : "isSource",
