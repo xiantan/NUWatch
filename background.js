@@ -48,7 +48,7 @@ chrome.extension.onMessage.addListener(function(request, sender) {
 	if (request.action == "getSource") {
 		chrome.tabs.query({}, function(tabs) {
 		for(var i in tabs){
-			chrome.tabs.sendMessage(tabs[i].id, {
+			chrome.tabs.sendMessage(tabs[i].id, {// send to each tab's content_script
 							action : "getSource"
 						},function(){
 							//console.log(tabUpdate.id+" sendGetSourceMessage done");
@@ -69,20 +69,22 @@ chrome.extension.onMessage.addListener(function(request, sender) {
 		var obj={url:request.url,content:request.source,title:request.title};
 		//obj[request.url]=request.url;
 		(function(obj){
-			var saveFunc = function(webDataObj){
-				return function(data){
-					if(data){//TODO check data
+			
+			var saveFunc = function(webDataObj) {
+				return function(data) {
+					if (data) {//TODO check data
 						/* check data*/
 					}
-					var obj2 ={};
+					var obj2 = {};
 					webDataObj.keyword = data || "";
-					/* just test line*/ webDataObj.content='';
+					///* just test line*/ webDataObj.content='';
+					//TODO webDataObj.content remove html tag
 					obj2[webDataObj.url] = webDataObj;
-					/* just test line*/ webDataObj;
-					chrome.storage.local.set(obj2,function(){
+					chrome.storage.local.set(obj2, function() {
 					});
 				};
-			};
+			}; 
+
 			
 			//contentSave = {url:url,content:content};
 			$.ajax({
@@ -90,62 +92,20 @@ chrome.extension.onMessage.addListener(function(request, sender) {
 					//url : host + "/tabs/save/",
 					url : 'http://www.cs.ccu.edu.tw/~cht99u/key',
 					//data : JSON.stringify(saveInfo),
-					// data : "122gg",
 					contentType : "text/plain",
 					// contentType: "application/json",
 					//dateType:'text',
 					success : saveFunc(obj),
 					error : function(data) {
-						console.log("fail" + JSON.parse(JSON.stringify(tabary)));
+						console.log("fail" + JSON.stringify(data));
 					}
 			});
-			
-			
-			
-
 		})(obj);
 	}
 	else if(request.msg){
 		console.log("msg: "+request.msg);
 	}
-	else if(request.openUrls){
-		var obj = request.openUrls;
-		for(var i=0;i< obj.urls.length;i++){
-			(function(obj,i){
-				
-				if(chrome.runtime.lastError){
-								console.log("error: "+chrome.runtime.lastError.message);
-							}
-				chrome.tabs.create({
-					//active : false
-				}, function(tab) {//BUG BUG TODO
-					// chrome.tabs.create({url:obj.urls[i].url},function(tab){
-					chrome.tabs.update(tab.id, {
-						url : obj.urls[i].url,
-						active : false
-					}, function(tabUpdate) {
-						setTimeout(function(){
-							console.log(tabUpdate.id);
-						chrome.tabs.sendMessage(tabUpdate.id, {
-							action : "setScrollPosition",
-							to : obj.urls[i].scrollLocation
-						},function(){
-							console.log(tabUpdate.id+" sendMessagedone");
-							if(chrome.runtime.lastError){
-								console.log("error: "+chrome.runtime.lastError.message);
-							}
-						});
-						},2000);
-						console.log("updateID: "+tabUpdate.id);
-					});
-				}); 
-
-				
-			})(obj,i);
-			console.log(obj.urls[i].title+"||"+obj.urls[i].scrollLocation);			
-		}
-		
-	}
+	else if(request.openUrls){}
 	else  {
 		console.log(request);
 		//console.log(request.source);
