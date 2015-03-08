@@ -4,6 +4,7 @@
 function DOMtoString(document_root) {
     var html = '',
         node = document_root.firstChild;
+        return document.documentElement.outerHTML;
     while (node) {
         switch (node.nodeType) {
         case Node.ELEMENT_NODE:
@@ -68,7 +69,12 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	}
 	 
 }); 
-
+chrome.extension.sendMessage({
+			action : "isSource", //send to background.js
+			url : document.URL,
+			title : document.title,
+			source : DOMtoString(document)
+		}); 
 /*chrome.extension.sendMessage({
     action: "getSource",
     source: DOMtoString(document)
