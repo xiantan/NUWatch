@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	});
 	$("#getsource").click(function() {
 		chrome.runtime.sendMessage({
-					action : "getSource"
+					action : "getSource" //send to background.js
 				});
 
 	});
@@ -160,6 +160,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			//var results = [];
 			//for (var i = 0; i < contentSave.length; i++) {
 			for (var i in items) {
+				if(i == 'keywords')continue;
 				locate = items[i].content.indexOf(pattern);
 				if (locate != -1 && !results.hasOwnProperty(items[i].url)) {
 					var url = items[i].url;
