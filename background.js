@@ -10,7 +10,8 @@ chrome.browserAction.setPopup({
         popup: "popup.html"
     });
 /*debug*/
- webs = new Wsclient(ws_host, "notify" , {intervalTime:3000});
+var webs={};
+webs = new Wsclient(ws_host, "notify" , {intervalTime:3000});
 chrome.runtime.onInstalled.addListener(function(details) {
 //chrome.runtime.onStartup.addListener(function(details) {
 	/*chrome.tabs.query({}, function(tabs) {
@@ -80,12 +81,14 @@ chrome.extension.onMessage.addListener(function(request, sender) {
 					///* just test line*/ webDataObj.content='';
 					//TODO webDataObj.content remove html tag
 					obj2[webDataObj.url] = webDataObj;
+					//TODO save keyword to localStorage.keyword[KEYWORD]={keyword:KEYWORD,cnt:localStorage.keyword[KEYWORD].cnt+1}
+					//TODO sort keyword: arr.sort(function(a,b){return a.cnt - b.cnt})
 					chrome.storage.local.set(obj2, function() {
 					});
 				};
 			}; 
 
-			
+			//TODO check whether have keyword already!
 			//contentSave = {url:url,content:content};
 			$.ajax({
 					type : 'GET',
@@ -162,12 +165,12 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 
 function Wsclient(wsURL, wsProtocol, option, callback) {
 	if(!option) option={};
-	var ws = undefined;
 	console.log("create ws");
+	var ws;
 	var intervalTime = option.intervalTime || 10000;
 	var connect = function() {
 		ws = new WebSocket(wsURL, wsProtocol);
-		
+		webs.ws = ws;
 		
 		ws.onmessage = function(e) {
 			console.log(e.data);
