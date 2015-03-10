@@ -149,9 +149,10 @@ document.addEventListener('DOMContentLoaded', function() {
 					// action : "search",
 					// search : $("#uid").val()
 				// });
-		var contentSave={};
-		chrome.storage.local.get(null, function(items) {
-			contentSave = items.content;
+		//var contentSave={};
+		//chrome.storage.local.get(null, function(items) {
+			var items = localStorage;
+			//contentSave = items.content;
 			//console.log(items);return;
 			var results = {};
 			pattern = $("#uid").val();
@@ -161,19 +162,25 @@ document.addEventListener('DOMContentLoaded', function() {
 			//for (var i = 0; i < contentSave.length; i++) {
 			for (var i in items) {
 				if(i == 'keywords')continue;
-				locate = items[i].content.indexOf(pattern);
-				if (locate != -1 && !results.hasOwnProperty(items[i].url)) {
-					var url = items[i].url;
-					var content = items[i].content;
-					var title = items[i].title;
+				var item={};
+				try{
+					item=JSON.parse(items[i]);
+				}catch(e){
+					continue;
+				}
+				locate = item.content.indexOf(pattern);
+				if (locate != -1 && !results.hasOwnProperty(item.url)) {
+					var url = item.url;
+					var content = item.content;
+					var title = item.title;
 					// results.push({ url:url });
 					var obj={};
 					obj = {url:url,title:title,subcontent:content.substring(locate-15,locate+30)};
 					
 					results[url] = obj;
-					console.log(locate + "$$$$" + results.hasOwnProperty(items[i].url) + "&&&" + items[i].url);
+					console.log(locate + "$$$$" + results.hasOwnProperty(item.url) + "&&&" + item.url);
 				} else {
-					console.log(locate + "$$$$" + results.hasOwnProperty(items[i].url) + "&&&" + items[i].url);
+					console.log(locate + "$$$$" + results.hasOwnProperty(item.url) + "&&&" + item.url);
 				}
 			}
 			// for(var i =0;i<results.length;i++){
@@ -210,7 +217,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			//$("#tabList").html(htmStr); 
 			console.log($("tabList"));
 
-		}); 
+		//}); 
 
 
 	});
