@@ -36,6 +36,7 @@ chrome.runtime.onInstalled.addListener(function(details) {
     }*/
     //chrome.storage.local.remove('content',function(){console.log("remove content @ extension inital");});
     chrome.storage.local.clear(function(){console.log("clear all @ extension inital");});
+    localStorage.clear();
 	//console.log("should be all reload");
 
 }); 
@@ -77,19 +78,49 @@ chrome.extension.onMessage.addListener(function(request, sender) {
 						/* check data*/
 					}
 					var obj2 = {};
+					
 					webDataObj.keyword = data || "";
+					
 					///* just test line*/ webDataObj.content='';
 					//TODO webDataObj.content remove html tag
 					obj2[webDataObj.url] = webDataObj;
 					//TODO save keyword to localStorage.keyword[KEYWORD]={keyword:KEYWORD,cnt:localStorage.keyword[KEYWORD].cnt+1}
-					//TODO sort keyword: arr.sort(function(a,b){return a.cnt - b.cnt})
-					chrome.storage.local.set(obj2, function() {
-					});
+					var item = localStorage.getItem('keyword');
+					if(!item){
+						item = JSON.stringify([]);						
+					}
+					item = JSON.parse(item);
+					var result = arrayObjectIndexOf(item, "keyword", webDataObj.keyword);
+					if(result === -1){
+						keywordCnt = 0;
+						item.push({keyword:webDataObj.keyword,cnt:++keywordCnt} );						
+					}
+					else{
+						item[result].cnt++;
+					}
+					
+					//TODO sort keyword: arr.sort(function(a,b){return a.cnt - b.cnt}) // TODO move to show keyword page
+					/*if(localStorage.getItem("") === null){
+						console.log('first set webs');
+						localStorage.setItem(webs,JSON.stringify(webDataObj) );
+					}*/
+					console.log(webDataObj.url);
+					//console.log(JSON.stringify(webDataObj));
+					localStorage.setItem('keyword',JSON.stringify(item));
+					localStorage.setItem(webDataObj.url,JSON.stringify(webDataObj) );
+					
+					/*chrome.storage.local.set(obj2, function() {
+					});*/
 				};
 			}; 
 
-			//TODO check whether have keyword already!
+			
 			//contentSave = {url:url,content:content};
+			var tmpObj = {};
+			tmpObj = localStorage.getItem(obj.url);
+			tmpObj && (tmpObj = JSON.parse(tmpObj ) );
+			if(tmpObj && tmpObj.keyword)  return;
+			
 			$.ajax({
 					type : 'GET',
 					//url : host + "/tabs/save/",
@@ -247,3 +278,10 @@ function Wsclient(wsURL, wsProtocol, option, callback) {
 	
 	return {ws:ws};
 }
+function arrayObjectIndexOf(myArray, property , searchTerm) {
+    for(var i = 0, len = myArray.length; i < len; i++) {
+        if (myArray[i][property] === searchTerm) return i;
+    }
+    return -1;
+}
+
