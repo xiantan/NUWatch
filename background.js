@@ -5,6 +5,7 @@ var host = "140.123.101.185:3009";
 var web_host="http://"+host;
 var ws_host="ws://"+host;
 var id_host = 'http://140.123.101.185:9527';
+var keyword_service = 'http://www.cs.ccu.edu.tw/~cht99u/key.php';
 
 chrome.browserAction.setPopup({
         popup: "popup.html"
@@ -124,7 +125,7 @@ chrome.extension.onMessage.addListener(function(request, sender) {
 			$.ajax({
 					type : 'GET',
 					//url : host + "/tabs/save/",
-					url : 'http://www.cs.ccu.edu.tw/~cht99u/key',
+					url : keyword_service,
 					//data : JSON.stringify(saveInfo),
 					contentType : "text/plain",
 					// contentType: "application/json",
