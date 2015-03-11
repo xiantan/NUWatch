@@ -7,9 +7,14 @@ var ws_host="ws://"+host;
 var id_host = 'http://140.123.101.185:9527';
 var keyword_service = 'http://www.cs.ccu.edu.tw/~cht99u/key.php';
 
-chrome.browserAction.setPopup({
+/*chrome.browserAction.setPopup({
         popup: "popup.html"
-    });
+    });*/
+chrome.browserAction.onClicked.addListener(function (){
+	var optionsUrl = chrome.extension.getURL('options.html');
+	
+		chrome.tabs.create({url: optionsUrl});
+});
 /*debug*/
 var webs={};
 webs = new Wsclient(ws_host, "notify" , {intervalTime:3000});
@@ -38,6 +43,67 @@ chrome.runtime.onInstalled.addListener(function(details) {
     //chrome.storage.local.remove('content',function(){console.log("remove content @ extension inital");});
     chrome.storage.local.clear(function(){console.log("clear all @ extension inital");});
     localStorage.clear();
+    chrome.history.search({//TODO move to onInstalled
+			text : '',
+			startTime : 0,
+			maxResults : 1e9
+		}, function(data) {
+			var tmp = [];
+			for (var i in data) {
+				tmp[i] = {};
+				tmp[i].url = data[i].url;
+				tmp[i].title = data[i].title;
+				localStorage.setItem(tmp[i].url,JSON.stringify(tmp[i]));
+				//tmp[i].visitCount = data[i].visitCount;
+			}
+			// console.log(JSON.stringify(tmp));
+			console.log(tmp);
+			//$("#tabList").html(JSON.stringify(tmp));
+			/*TODO http request post : JSON.stringify(sendObj)
+			 * sendObj = {};
+			 * sendObj.urls=tmp;
+			 * sendObj.type="history"
+			 * sendObj.version=1;
+			 * sendObj.uid=identifyId;
+			 */
+			
+			/* get bookmarks */
+			
+			
+		
+
+		function traversalBookmark(bookmarks) {//TODO use $.ajax to replace! && must move to chrome.runtime.onInstalled
+			//bookmarks.forEach(function(bookmark) {
+			for (var i in bookmarks) {
+				if (bookmarks[i].children) {
+					//console.log(">>>"+bookmarks[i].title);
+					//str += ">>>" + bookmarks[i].title + "<br/>\n";
+					traversalBookmark(bookmarks[i].children);
+				} else {
+					var obj = {};
+					//console.log( bookmarks[i].title + "[" +bookmarks[i].url + "]");
+					obj.url = bookmarks[i].url;
+					obj.title = bookmarks[i].title;
+					var result = arrayObjectIndexOf(tmp, "url", obj.url);
+					if(result === -1){
+						tmp.push(obj);
+						localStorage.setItem(obj.url,JSON.stringify(obj));
+					}
+					//str += bookmarks[i].title + "[" + bookmarks[i].url + "]<br/>\n";
+				}
+
+			}
+		}
+
+
+		(function(tmp){
+			chrome.bookmarks.getTree(function(bookmarks) {
+				traversalBookmark(bookmarks);
+				
+				}); 
+	}(tmp) );
+
+		});
 	//console.log("should be all reload");
 
 }); 
