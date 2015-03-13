@@ -1,7 +1,7 @@
 {
 	"name": "NUWatch",
 	"description": "for NUWatch chroem extension, just test.",
-	"version": "0.0.1",
+	"version": "0.0.5",
 	"background": {
 		"scripts": ["jquery.js", "background.js"]
 	},
@@ -29,6 +29,7 @@
 
 		}
 	],
+	//"update_url": "https://clients2.google.com/service/update2/crx",
 		
 	"manifest_version": 2
 }
