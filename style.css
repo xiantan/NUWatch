@@ -1,37 +1,58 @@
-.hilight {
+.highlight {
 	background-color: yellow;
 }
 
-button {
-	display: inline-block;
-	margin-bottom: 0;
-	font-size: 14px;
-	line-height: 20px;
-	color: #333;
-	text-align: center;
-	text-shadow: 0 1px 1px rgba(255,255,255,.75);
-	vertical-align: middle;
-	cursor: pointer;
-	margin-top: 5px;
-	background-color: #f5f5f5;
-	background-image: linear-gradient(to bottom,#fff,#e6e6e6);
-	background-repeat: repeat-x;
-	border: 1px solid #ccc;
-	border-color: #e6e6e6 #e6e6e6 #bfbfbf;
-	border-color: rgba(0,0,0,.1) rgba(0,0,0,.1) rgba(0,0,0,.25);
-	border-bottom-color: #b3b3b3;
-	border-radius: 4px;
-	box-shadow: inset 0 1px 0 rgba(255,255,255,.2), 0 1px 2px rgba(0,0,0,.05);
+html body {
+	/*width: 600px;
+	 height: 300px;
+	 position: absolute;
+	 top: 50%;
+	 left: 50%;
+	 margin: -150px 0 0 -300px;*/
 }
-
-html body{
-	//height:200px;
-	width: 300px;
-}
-.title{
+.title {
 	font-weight: bold;
 	font-size: 1.1em;
 }
-.subcontent{
-	background-color: yellow;
+.subcontent {
+	background-color: #F5F5F5;
+}
+.searchDiv {
+	position: relative;
+	margin: 1rem 1rem 1rem 1rem;
+}
+.searchDiv input {
+	margin-left: 0.3 rem;
+	margin-right: 0.3 rem;
+	height: 1.8 rem;
+	width: 12rem
+}
+.searchDiv button {
+	display: inline-block;
+	margin-bottom: 0;
+	margin-top: 0;
+	font-size: 1.2 rem;
+	line-height: 1.8 rem;
+	color: #333;
+	text-align: center;
+	text-shadow: 0 0.1 rem 0.1 rem rgba(255,255,255,.75);
+	vertical-align: middle;
+	cursor: pointer;
+	background-color: #f5f5f5;
+	background-image: linear-gradient(to bottom,#fff,#e6e6e6);
+	background-repeat: repeat-x;
+	border: 0.1 rem solid #ccc;
+	border-color: #e6e6e6 #e6e6e6 #bfbfbf;
+	border-color: rgba(0,0,0,.1) rgba(0,0,0,.1) rgba(0,0,0,.25);
+	border-bottom-color: #b3b3b3;
+	border-radius: 0.4 rem;
+	box-shadow: inset 0 0.1 rem 0 rgba(255,255,255,.2), 0 0.1 rem 0.2 rem rgba(0,0,0,.05);
+}
+.center {
+
+	position: absolute;
+	display: table width : auto;
+	margin-left: auto;
+	margin-right: auto;
+	/*margin: 0px auto;*/
 }
