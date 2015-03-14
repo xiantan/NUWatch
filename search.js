@@ -44,6 +44,7 @@ document.addEventListener('DOMContentLoaded', function() {
 				var isContent = false;
 				locate =   item.keyword && item.keyword.indexOf(pattern)  ;
 				if(locate === undefined || locate === -1) locate = item.title && item.title.indexOf(pattern) ;
+				if(locate === undefined || locate === -1) locate = item.url && item.url.indexOf(pattern) ;
 				if(locate === undefined || locate === -1){ 
 					locate =  item.content && item.content.indexOf(pattern)  ;
 					if(locate !== -1 && locate !== undefined){
@@ -60,7 +61,7 @@ document.addEventListener('DOMContentLoaded', function() {
 					obj = {url:url,title:title,subcontent:content,isContent:isContent};
 					
 					results[url] = obj;
-					console.log(locate + "$$$$" + results.hasOwnProperty(item.url) + "&&&" + item.url);
+					//console.log(locate + "$$$$" + results.hasOwnProperty(item.url) + "&&&" + item.url);
 				} else {
 					//console.log(locate + "$$$$" + results.hasOwnProperty(item.url) + "&&&" + item.url);
 				}
@@ -69,7 +70,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			// console.log(results[i].url);
 			// }
 
-			console.log("result" + JSON.stringify(results));
+			//console.log("result" + JSON.stringify(results));
 				
 			htmStr = "";
 			$("#tabList").html(""); 
@@ -126,7 +127,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			
 			//highlight(pattern);
 			//$("#tabList").html(htmStr); 
-			console.log($("#tabList"));
+			//console.log($("#tabList"));
 
 		//}); 
 
