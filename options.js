@@ -38,17 +38,26 @@ document.addEventListener('DOMContentLoaded', function() {
 					continue;
 				}
 				var locate = undefined;
-				
+				var url = item.url || '';
+				var content=item.content || '';
+				var title = item.title || '';
+				var isContent = false;
 				locate =   item.keyword && item.keyword.indexOf(pattern)  ;
 				if(locate === undefined || locate === -1) locate = item.title && item.title.indexOf(pattern) ;
-				if(locate === undefined || locate === -1) locate =  item.content && item.content.indexOf(pattern)  ;
-				if ( locate !== undefined &&locate != -1 && !results.hasOwnProperty(item.url) ) {
-					var url = item.url || '';
-					var content = (item.content && item.content.substring(locate-15,locate+30) ) || '';
-					var title = item.title || '';
+				if(locate === undefined || locate === -1){ 
+					locate =  item.content && item.content.indexOf(pattern)  ;
+					if(locate !== -1 && locate !== undefined){
+						//content = content.substring(0,locate) + "<span class='highlight'>" + content.substring(locate,locate+pattern.length) + "</span>" + content.substring(locate + pattern.length);
+						content = (content && content.substring(locate-50,locate+100) ) || '';
+						isContent = true;
+					}
+					
+				}
+				if ( locate !== undefined &&locate !== -1 &&   locate !== '' &&!results.hasOwnProperty(item.url) ) {
+					
 					// results.push({ url:url });
 					var obj={};
-					obj = {url:url,title:title,subcontent:content};
+					obj = {url:url,title:title,subcontent:content,isContent:isContent};
 					
 					results[url] = obj;
 					console.log(locate + "$$$$" + results.hasOwnProperty(item.url) + "&&&" + item.url);
@@ -69,17 +78,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
 					var tabList = document.getElementById("tabList");
 					var list = document.createElement('div');
-					list.setAttribute("class","list");
+					list.setAttribute("class","list-group-item");
 					var href = document.createElement("a");
 					href.setAttribute("href",results[i].url);
 					href.setAttribute("class","title");
 					href.innerHTML=results[i].title;
 					list.appendChild(href);
 					list.appendChild(document.createElement("br"));
-					var subcontent = document.createElement('div');
-					subcontent.setAttribute("class","subcontent");
-					subcontent.appendChild(document.createTextNode(results[i].subcontent) );
-					list.appendChild(subcontent);
+					if(results[i].isContent){
+						var subcontent = document.createElement('div');
+						subcontent.setAttribute("class","subcontent");
+						subcontent.appendChild(document.createTextNode(results[i].subcontent) );
+						list.appendChild(subcontent);
+					}
 					tabList.appendChild(list);
 
 					//htmStr += '<div class="list"><a href="' + results[i].url + '">' + results[i].title + '</a><br/>';
@@ -90,6 +101,30 @@ document.addEventListener('DOMContentLoaded', function() {
 					console.log(results[i]);
 				}
 			}
+		/*inputText = document.getElementById("tabList");
+		//TODO use for loop to traverse node to make """only""" text to highlight
+		
+		while (inputText) {
+			switch (inputText.nodeType) {
+			case Node.ELEMENT_NODE:
+				var content = inputText.innerHTML;
+    			var locate = content.indexOf(pattern);
+    			if ( locate >= 0 )
+    			{ 
+    				content = content.substring(0,locate) + "<span class='highlight'>" + content.substring(locate,locate+pattern.length) + "</span>" + content.substring(locate + pattern.length);
+					inputText.innerHTML = content ;
+    			}
+				//html += inputText.nodeValue;
+				break;
+			}
+			inputText = inputText.nextSibling;
+		}
+*/
+
+	    
+
+			
+			//highlight(pattern);
 			//$("#tabList").html(htmStr); 
 			console.log($("#tabList"));
 
@@ -142,6 +177,8 @@ function sendGetScrollPosition(tabs, tabary) {
 	}
 	return  deferreds;
 }
+
+
 /*
  * center example 
  jQuery.fn.center = function () {

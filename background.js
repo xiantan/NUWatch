@@ -149,7 +149,19 @@ chrome.extension.onMessage.addListener(function(request, sender) {
 					webDataObj.keyword = data || "";
 					
 					///* just test line*/ webDataObj.content='';
+					
+					
+					
+					
 					//TODO webDataObj.content remove html tag
+					//TODO this has terrible performance
+					matchTag = /(<script(.*?)>(.|[\r\n])*?<\/script>)|(<style(.*?)>(.|[\r\n])*?<\/style>)/g; 
+					webDataObj.content = webDataObj.content.replace(matchTag,"");
+					matchTag =/<(?:.|s)*?>|nbsp;/g ;
+					webDataObj.content = webDataObj.content.replace(matchTag,"");
+					
+
+
 					obj2[webDataObj.url] = webDataObj;
 					//TODO save keyword to localStorage.keyword[KEYWORD]={keyword:KEYWORD,cnt:localStorage.keyword[KEYWORD].cnt+1}
 					var item = localStorage.getItem('keyword');
