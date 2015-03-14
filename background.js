@@ -10,7 +10,7 @@ var keyword_service = 'http://www.cs.ccu.edu.tw/~cht99u/key.php';
 /*chrome.browserAction.setPopup({
         popup: "popup.html"
     });*/
-chrome.browserAction.onClicked.addListener(function (){
+chrome.browserAction.onClicked.addListener(function (){//TODO show list to select what to do;
 	var searchUrl = chrome.extension.getURL('search.html');
 	
 		chrome.tabs.create({url: searchUrl});
@@ -43,7 +43,7 @@ chrome.runtime.onInstalled.addListener(function(details) {
     //chrome.storage.local.remove('content',function(){console.log("remove content @ extension inital");});
     chrome.storage.local.clear(function(){console.log("clear all @ extension inital");});
     localStorage.clear();
-    chrome.history.search({//TODO move to onInstalled
+    chrome.history.search({
 			text : '',
 			startTime : 0,
 			endTime : Date.now(),
@@ -60,7 +60,7 @@ chrome.runtime.onInstalled.addListener(function(details) {
 			// console.log(JSON.stringify(tmp));
 			console.log(tmp);
 			//$("#tabList").html(JSON.stringify(tmp));
-			/*TODO http request post : JSON.stringify(sendObj)
+			/*
 			 * sendObj = {};
 			 * sendObj.urls=tmp;
 			 * sendObj.type="history"
@@ -73,7 +73,7 @@ chrome.runtime.onInstalled.addListener(function(details) {
 			
 		
 
-		function traversalBookmark(bookmarks) {//TODO use $.ajax to replace! && must move to chrome.runtime.onInstalled
+		function traversalBookmark(bookmarks) {
 			//bookmarks.forEach(function(bookmark) {
 			for (var i in bookmarks) {
 				if (bookmarks[i].children) {
@@ -154,7 +154,6 @@ chrome.extension.onMessage.addListener(function(request, sender) {
 					
 					
 					
-					//TODO webDataObj.content remove html tag
 					//TODO this has terrible performance
 					matchTag = /(<script(.*?)>(.|[\r\n])*?<\/script>)|(<style(.*?)>(.|[\r\n])*?<\/style>)/g; 
 					webDataObj.content = webDataObj.content.replace(matchTag,"");
@@ -164,7 +163,6 @@ chrome.extension.onMessage.addListener(function(request, sender) {
 
 
 					obj2[webDataObj.url] = webDataObj;
-					//TODO save keyword to localStorage.keyword[KEYWORD]={keyword:KEYWORD,cnt:localStorage.keyword[KEYWORD].cnt+1}
 					var item = localStorage.getItem('keyword');
 					if(!item){
 						item = JSON.stringify([]);						
@@ -303,9 +301,11 @@ function Wsclient(wsURL, wsProtocol, option, callback) {
 				};
 				getmesage(opt);
 			}
-
+			var notiNum = receiveJson.notificationNum;
+			if(notiNum>999)notiNum = '999+';
+			if(notiNum == 0)notiNum = '';
 			chrome.browserAction.setBadgeText({
-				text : "" + receiveJson.notificationNum
+				text : "" + notiNum
 			});
 
 			
