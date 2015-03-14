@@ -42,7 +42,10 @@ document.addEventListener('DOMContentLoaded', function() {
 				var content=item.content || '';
 				var title = item.title || '';
 				var isContent = false;
-				locate =   item.keyword && item.keyword.indexOf(pattern)  ;
+				
+				if(item.keyword){
+					locate = item.keyword.indexOf(pattern)  ;
+				}
 				if(locate === undefined || locate === -1) locate = item.title && item.title.indexOf(pattern) ;
 				if(locate === undefined || locate === -1) locate = item.url && item.url.indexOf(pattern) ;
 				if(locate === undefined || locate === -1){ 
