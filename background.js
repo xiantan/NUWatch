@@ -11,9 +11,9 @@ var keyword_service = 'http://www.cs.ccu.edu.tw/~cht99u/key.php';
         popup: "popup.html"
     });*/
 chrome.browserAction.onClicked.addListener(function (){
-	var optionsUrl = chrome.extension.getURL('options.html');
+	var searchUrl = chrome.extension.getURL('search.html');
 	
-		chrome.tabs.create({url: optionsUrl});
+		chrome.tabs.create({url: searchUrl});
 });
 /*debug*/
 var webs={};
@@ -46,6 +46,7 @@ chrome.runtime.onInstalled.addListener(function(details) {
     chrome.history.search({//TODO move to onInstalled
 			text : '',
 			startTime : 0,
+			endTime : Date.now(),
 			maxResults : 1e9
 		}, function(data) {
 			var tmp = [];
