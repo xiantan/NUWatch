@@ -184,7 +184,7 @@ chrome.extension.onMessage.addListener(function(request, sender) {
 					}*/
 					console.log(webDataObj.url);
 					//console.log(JSON.stringify(webDataObj));
-					localStorage.setItem('keyword',JSON.stringify(item));
+					localStorage.setItem('keywords',JSON.stringify(item));
 					localStorage.setItem(webDataObj.url,JSON.stringify(webDataObj) );
 					
 					/*chrome.storage.local.set(obj2, function() {
